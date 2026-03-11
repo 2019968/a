@@ -1,0 +1,10 @@
+-- 小时段行为统计
+SELECT
+    behavior_hour AS 小时,
+    SUM(CASE WHEN behavior_type=1 THEN 1 ELSE 0 END) AS 浏览次数,
+    SUM(CASE WHEN behavior_type=2 THEN 1 ELSE 0 END) AS 收藏次数,
+    SUM(CASE WHEN behavior_type=3 THEN 1 ELSE 0 END) AS 加购次数,
+    SUM(CASE WHEN behavior_type=4 THEN 1 ELSE 0 END) AS 购买次数
+FROM user_behavior_clean
+GROUP BY behavior_hour
+ORDER BY behavior_hour;

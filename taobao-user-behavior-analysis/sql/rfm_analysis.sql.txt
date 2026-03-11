@@ -1,0 +1,109 @@
+-- RFM模型计算+用户分层
+WITH user_rfm AS (
+    SELECT
+        user_id,
+        DATEDIFF('2014-12-19', MAX(CASE WHEN behavior_type=4 THEN time END)) AS R,
+        COUNT(CASE WHEN behavior_type=4 THEN 1 END) AS F,
+        COUNT(DISTINCT CASE WHEN behavior_type=4 THEN item_id END) AS M
+    FROM user_behavior_clean
+    GROUP BY user_id
+    HAVING F > 0
+),
+user_rfm_score AS (
+    SELECT
+        user_id,
+        R,
+        F,
+        M,
+        CASE
+            WHEN R <= 3 THEN 5
+            WHEN R <= 7 THEN 4
+            WHEN R <= 15 THEN 3
+            WHEN R <= 30 THEN 2
+            ELSE 1
+        END AS R_score,
+        CASE
+            WHEN F >= 5 THEN 5
+            WHEN F >= 3 THEN 4
+            WHEN F = 2 THEN 3
+            WHEN F = 1 THEN 2
+            ELSE 1
+        END AS F_score,
+        CASE
+            WHEN M >= 5 THEN 5
+            WHEN M >= 3 THEN 4
+            WHEN M = 2 THEN 3
+            WHEN M = 1 THEN 2
+            ELSE 1
+        END AS M_score
+    FROM user_rfm
+)
+SELECT
+    user_id,
+    R,
+    F,
+    M,
+    R_score,
+    F_score,
+    M_score,
+    CASE
+        WHEN R_score >=4 AND F_score >=4 AND M_score >=4 THEN '高价值用户'
+        WHEN R_score >=4 AND F_score <=3 AND M_score >=4 THEN '潜力用户'
+        WHEN R_score <=3 AND F_score >=4 AND M_score >=4 THEN '挽留用户'
+        ELSE '流失用户'
+    END AS user_level
+FROM user_rfm_score
+ORDER BY R_score DESC, F_score DESC, M_score DESC;
+
+-- RFM分层占比统计
+WITH user_rfm AS (
+    SELECT
+        user_id,
+        DATEDIFF('2014-12-19', MAX(CASE WHEN behavior_type=4 THEN time END)) AS R,
+        COUNT(CASE WHEN behavior_type=4 THEN 1 END) AS F,
+        COUNT(DISTINCT CASE WHEN behavior_type=4 THEN item_id END) AS M
+    FROM user_behavior_clean
+    GROUP BY user_id HAVING F > 0
+),
+user_rfm_score AS (
+    SELECT
+        user_id,
+        CASE 
+            WHEN R <= 3 THEN 5 
+            WHEN R <= 7 THEN 4 
+            WHEN R <= 15 THEN 3 
+            WHEN R <= 30 THEN 2 
+            ELSE 1 
+        END AS R_score,
+        CASE 
+            WHEN F >= 5 THEN 5 
+            WHEN F >= 3 THEN 4 
+            WHEN F = 2 THEN 3 
+            WHEN F = 1 THEN 2 
+            ELSE 1 
+        END AS F_score,
+        CASE 
+            WHEN M >= 5 THEN 5 
+            WHEN M >= 3 THEN 4 
+            WHEN M = 2 THEN 3 
+            WHEN M = 1 THEN 2 
+            ELSE 1 
+        END AS M_score
+    FROM user_rfm
+),
+user_level AS (
+    SELECT
+        CASE
+            WHEN R_score >= 4 AND F_score >= 4 AND M_score >= 4 THEN '高价值用户'
+            WHEN R_score >= 4 AND F_score <= 3 AND M_score >= 4 THEN '潜力用户'
+            WHEN R_score <= 3 AND F_score >= 4 AND M_score >= 4 THEN '挽留用户'
+            ELSE '流失用户'
+        END AS user_level
+    FROM user_rfm_score
+)
+SELECT
+    user_level,
+    COUNT(*) AS user_count,
+    ROUND(COUNT(*) / (SELECT COUNT(*) FROM user_level) * 100, 2) AS user_ratio
+FROM user_level
+GROUP BY user_level;

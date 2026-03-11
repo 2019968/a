@@ -1,0 +1,18 @@
+-- 周度行为统计
+SELECT
+    CASE behavior_weekday
+        WHEN 0 THEN '周一'
+        WHEN 1 THEN '周二'
+        WHEN 2 THEN '周三'
+        WHEN 3 THEN '周四'
+        WHEN 4 THEN '周五'
+        WHEN 5 THEN '周六'
+        WHEN 6 THEN '周日'
+    END AS 星期,
+    SUM(CASE WHEN behavior_type=1 THEN 1 ELSE 0 END) AS 浏览次数,
+    SUM(CASE WHEN behavior_type=2 THEN 1 ELSE 0 END) AS 收藏次数,
+    SUM(CASE WHEN behavior_type=3 THEN 1 ELSE 0 END) AS 加购次数,
+    SUM(CASE WHEN behavior_type=4 THEN 1 ELSE 0 END) AS 购买次数
+FROM user_behavior_clean
+GROUP BY behavior_weekday
+ORDER BY behavior_weekday;

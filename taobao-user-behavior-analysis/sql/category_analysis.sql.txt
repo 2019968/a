@@ -1,0 +1,12 @@
+-- 商品类目转化分析
+SELECT
+    item_category AS 商品类目ID,
+    COUNT(CASE WHEN behavior_type=1 THEN 1 END) AS 浏览次数,
+    COUNT(CASE WHEN behavior_type=3 THEN 1 END) AS 加购次数,
+    COUNT(CASE WHEN behavior_type=4 THEN 1 END) AS 购买次数,
+    ROUND(COUNT(CASE WHEN behavior_type=4 THEN 1 END) / NULLIF(COUNT(CASE WHEN behavior_type=1 THEN 1 END), 0) * 100, 2) AS 类目转化率_百分比
+FROM user_behavior_clean
+GROUP BY item_category
+HAVING COUNT(CASE WHEN behavior_type=1 THEN 1 END) >= 100
+ORDER BY 类目转化率_百分比 DESC
+LIMIT 20;

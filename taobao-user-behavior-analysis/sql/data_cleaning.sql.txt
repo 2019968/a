@@ -1,0 +1,21 @@
+-- 淘宝用户行为数据清洗脚本
+DROP TABLE IF EXISTS user_behavior_clean;
+CREATE TABLE user_behavior_clean AS
+SELECT
+    user_id,
+    item_id,
+    item_category,
+    behavior_type,
+    time,
+    DATE(time) AS behavior_date,
+    HOUR(time) AS behavior_hour,
+    WEEKDAY(time) AS behavior_weekday
+FROM 淘宝用户分析
+WHERE
+    behavior_type IN (1,2,3,4)
+    AND time BETWEEN '2014-11-18 00:00:00' AND '2014-12-18 23:59:59'
+    AND user_id IS NOT NULL;
+
+-- 验证清洗结果
+SELECT * FROM user_behavior_clean LIMIT 10;
+SELECT COUNT(*) AS total_cleaned_data, COUNT(DISTINCT user_id) AS total_users FROM user_behavior_clean;

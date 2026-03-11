@@ -1,0 +1,22 @@
+-- 行为类型统计
+SELECT
+    CASE behavior_type
+        WHEN 1 THEN '浏览'
+        WHEN 2 THEN '收藏'
+        WHEN 3 THEN '加购'
+        WHEN 4 THEN '购买'
+    END AS 行为类型,
+    COUNT(*) AS 行为次数,
+    ROUND(COUNT(*) / (SELECT COUNT(*) FROM user_behavior_clean) * 100, 2) AS 占比_百分比
+FROM user_behavior_clean
+GROUP BY behavior_type
+ORDER BY behavior_type;
+
+-- 基础转化漏斗
+SELECT
+    SUM(CASE WHEN behavior_type = 1 THEN 1 ELSE 0 END) AS 浏览数,
+    SUM(CASE WHEN behavior_type = 3 THEN 1 ELSE 0 END) AS 加购数,
+    SUM(CASE WHEN behavior_type = 2 THEN 1 ELSE 0 END) AS 收藏数,
+    SUM(CASE WHEN behavior_type = 4 THEN 1 ELSE 0 END) AS 购买数,
+    ROUND(SUM(CASE WHEN behavior_type = 4 THEN 1 ELSE 0 END) / SUM(CASE WHEN behavior_type = 1 THEN 1 ELSE 0 END) * 100, 2) AS 浏览转购买转化率_百分比
+FROM user_behavior_clean;
