@@ -1,0 +1,21 @@
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("train.csv", encoding="utf-8")
+
+missing_rate = df.isnull().sum() / len(df) * 100
+df = df.drop(columns=df.columns[missing_rate > 50])
+
+numeric_cols = df.select_dtypes(include=[np.number]).columns
+for col in numeric_cols:
+    df[col] = df[col].fillna(df[col].median())
+
+cat_cols = df.select_dtypes(exclude=[np.number]).columns
+for col in cat_cols:
+    df[col] = df[col].fillna(df[col].mode()[0])
+
+df = df.drop_duplicates()
+df.columns = [col.strip().replace(" ", "_") for col in df.columns]
+
+df.to_csv("train_cleaned.csv", index=False, encoding="utf-8-sig")
+print("清洗完成")
