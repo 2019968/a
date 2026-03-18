@@ -9,7 +9,6 @@ markdown
 
 ## 项目结构
 ├── sql/ # SQL 分析脚本（按分析流程拆分）│ ├── data_preview.sql # 原始数据预览│ ├── data_cleaning.sql # 数据清洗 + 时间维度拆分│ ├── behavior_analysis.sql # 行为类型统计│ ├── hour_analysis.sql # 小时段行为分析│ ├── week_analysis.sql # 周度行为分析│ ├── funnel_analysis.sql # 多路径转化漏斗│ ├── rfm_analysis.sql # RFM 用户分层│ └── category_analysis.sql # 商品类目转化分析├── excel/ # 可视化分析报表│ └── taobao_user_analysis_report.xlsx # 含 RFM / 类目 / 时间分析图表
-plaintext
 
 ## 核心分析结果
 ### 1. RFM用户分层（核心价值分析）
