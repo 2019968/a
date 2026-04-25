@@ -101,12 +101,12 @@ taobao-user-behavior-analysis/
 - 无加购直接购买：类目 1911、10121、12514 等无加购记录却有购买，可能是冲动消费品，适合在首屏展示
 
 ## 数据可视化展示
-<img width="1945" height="1295" alt="hourly_activity_chart" src="https://github.com/user-attachments/assets/f2204805-1013-4cc0-966b-5df24d0c3ac7" />
-<img width="2117" height="1271" alt="weekly_activity_bar" src="https://github.com/user-attachments/assets/314452c7-7bd6-4e77-88c9-82678fbd2252" />
-<img width="2431" height="1438" alt="category_performance_bar" src="https://github.com/user-attachments/assets/366160a2-4510-4bdd-a056-2823a485ac83" />
-<img width="1819" height="1115" alt="rfm_segmentation_pie" src="https://github.com/user-attachments/assets/aac3b2ea-67aa-4e34-9c10-868e99fd5626" />
-<img width="1653" height="993" alt="conversion_funnel_chart" src="https://github.com/user-attachments/assets/ffbce267-0b13-4258-9693-1c879faa0140" />
-<img width="1978" height="1471" alt="user_behavior_pie" src="https://github.com/user-attachments/assets/0e3b7c1a-106c-440b-9ed5-025bc71c7c24" />
+<img width="800" height="1295" alt="hourly_activity_chart" src="https://github.com/user-attachments/assets/f2204805-1013-4cc0-966b-5df24d0c3ac7" />
+<img width="800" height="1271" alt="weekly_activity_bar" src="https://github.com/user-attachments/assets/314452c7-7bd6-4e77-88c9-82678fbd2252" />
+<img width="800" height="1438" alt="category_performance_bar" src="https://github.com/user-attachments/assets/366160a2-4510-4bdd-a056-2823a485ac83" />
+<img width="800" height="1115" alt="rfm_segmentation_pie" src="https://github.com/user-attachments/assets/aac3b2ea-67aa-4e34-9c10-868e99fd5626" />
+<img width="800" height="993" alt="conversion_funnel_chart" src="https://github.com/user-attachments/assets/ffbce267-0b13-4258-9693-1c879faa0140" />
+<img width="800" height="1471" alt="user_behavior_pie" src="https://github.com/user-attachments/assets/0e3b7c1a-106c-440b-9ed5-025bc71c7c24" />
 
 
 
