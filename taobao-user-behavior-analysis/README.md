@@ -100,14 +100,13 @@ taobao-user-behavior-analysis/
 - 隐藏爆款：类目 2949 以 25.85% 的转化率领先，但曝光量仅为 646，应增加推荐流量
 - 无加购直接购买：类目 1911、10121、12514 等无加购记录却有购买，可能是冲动消费品，适合在首屏展示
 
-## 关键可视化
-项目核心分析图表（已上传至仓库 `图片/` 文件夹）：
-- ![用户行为占比环形图](图片/user_behavior_pie.png)
-- ![小时活跃度趋势图](图片/hourly_activity_chart.png)
-- ![星期活跃度对比柱状图](图片/weekly_activity_bar.png)
-- ![转化漏斗分析图](图片/conversion_funnel_chart.png)
-- ![RFM用户分层饼图](图片/rfm_segmentation_pie.png)
-- ![商品类目转化率排行条形图](图片/category_performance_bar.png)
+## 数据可视化展示
+- ![用户行为占比环形图](./图片/user_behavior_pie.png)
+- ![小时活跃度趋势图](./图片/hourly_activity_chart.png)
+- ![星期活跃度对比柱状图](./图片/weekly_activity_bar.png)
+- ![转化漏斗分析图](./图片/conversion_funnel_chart.png)
+- ![RFM用户分层饼图](./图片/rfm_segmentation_pie.png)
+- ![商品类目转化率排行条形图](./图片/category_performance_bar.png)
 
 ## 如何复现
 1. 将淘宝用户行为数据集导入 MySQL（库名 `taobao`，表名 `user_behavior`）
