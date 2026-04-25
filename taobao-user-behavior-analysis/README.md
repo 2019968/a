@@ -10,7 +10,7 @@
 - 技术栈：MySQL（数据预处理与指标计算）、Excel（数据透视表、图表、分析报告）
 
 ## 项目结构
-```
+
 taobao-user-behavior-analysis/
 ├── Excel/
 │   └── taobao_user_analysis_report.xlsx
