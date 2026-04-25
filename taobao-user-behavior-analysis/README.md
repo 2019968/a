@@ -31,7 +31,7 @@ taobao-user-behavior-analysis/
 │   ├── rfm_segmentation_pie.png
 │   └── category_performance_bar.png
 └── README.md
-```
+
 
 ## 分析流程与核心发现
 ### 1. 用户行为整体分布
