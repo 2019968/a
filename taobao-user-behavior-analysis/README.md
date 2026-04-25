@@ -1,3 +1,4 @@
+```markdown
 # 淘宝用户行为数据分析
 
 基于阿里云天池公开数据集，使用 MySQL + Excel 完成的全流程电商用户行为分析。涵盖用户行为分布、时段/星期规律、转化路径诊断、RFM 用户分层与品类偏好，输出从清洗、计算、可视化到业务建议的完整实战闭环。
@@ -11,9 +12,24 @@
 ## 项目结构
 ```
 taobao-user-behavior-analysis/
-├── SQL/                          # SQL 脚本（数据清洗、行为分析、漏斗、RFM）
-├── Excel/                        # 分析图表与最终报告
-│   └── taobao_user_analysis_report.xlsx
+├── Excel/
+│   └── taobao_user_analysis_report.xlsx  # 可视化分析报告
+├── SQL/
+│   ├── behavior_analysis.sql    # 用户整体行为分布
+│   ├── category_analysis.sql   # 商品类目偏好分析
+│   ├── data_cleaning.sql       # 数据清洗与预处理
+│   ├── data_preview.sql        # 数据概览与质量检查
+│   ├── funnel_analysis.sql     # 转化漏斗分析
+│   ├── hour_analysis.sql       # 小时维度活跃度分析
+│   ├── rfm_analysis.sql        # RFM 用户价值分层
+│   └── week_analysis.sql       # 星期维度活跃度分析
+├── 图片/                        # 项目可视化图表
+│   ├── user_behavior_pie.png
+│   ├── hourly_activity_chart.png
+│   ├── weekly_activity_bar.png
+│   ├── conversion_funnel_chart.png
+│   ├── rfm_segmentation_pie.png
+│   └── category_performance_bar.png
 └── README.md
 ```
 
@@ -84,16 +100,17 @@ taobao-user-behavior-analysis/
 - **无加购直接购买**：类目 1911、10121、12514 等无加购记录却有购买，可能是冲动消费品，适合在首屏展示
 
 ## 关键可视化
-建议将 Excel 中的核心图表截图保存至 `images/` 文件夹，在此处引用：
-- 用户行为占比环形图
-- 小时活跃面积图
-- 星期对比柱状图
-- RFM 分层饼图
-- 品类排行榜条形图
+项目核心分析图表（已上传至仓库 `图片/` 文件夹）：
+- ![用户行为占比环形图](图片/user_behavior_pie.png)
+- ![小时活跃度趋势图](图片/hourly_activity_chart.png)
+- ![星期活跃度对比柱状图](图片/weekly_activity_bar.png)
+- ![转化漏斗分析图](图片/conversion_funnel_chart.png)
+- ![RFM用户分层饼图](图片/rfm_segmentation_pie.png)
+- ![商品类目转化率排行条形图](图片/category_performance_bar.png)
 
 ## 如何复现
 1. 将淘宝用户行为数据集导入 MySQL（库名 `taobao`，表名 `user_behavior`）
-2. 依次运行 `SQL/` 文件夹下的脚本
+2. 按顺序运行 `SQL/` 文件夹下的脚本：`data_preview.sql` → `data_cleaning.sql` → 各分析脚本
 3. 导出查询结果至 Excel，用数据透视表或图表功能完成可视化
 4. 最终报告详见 `Excel/taobao_user_analysis_report.xlsx`
 
@@ -110,3 +127,5 @@ taobao-user-behavior-analysis/
 
 ## 联系方式
 欢迎通过 [你的邮箱 / LinkedIn] 与我交流，期待反馈与建议。
+```
+
