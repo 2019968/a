@@ -11,7 +11,7 @@ markdown
 
 
 ```markdown
-## 项目结构
+ 项目结构
 taobao-user-behavior-analysis/
 ├── Excel/
 │   └── taobao_user_analysis_report.xlsx
@@ -33,7 +33,7 @@ taobao-user-behavior-analysis/
 │   └── category_performance_bar.png
 └── README.md
 ```
-```
+
 
 ## 分析流程与核心发现
 ### 1. 用户行为整体分布
