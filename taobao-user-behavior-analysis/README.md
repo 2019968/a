@@ -101,8 +101,6 @@ taobao-user-behavior-analysis/
 - 无加购直接购买：类目 1911、10121、12514 等无加购记录却有购买，可能是冲动消费品，适合在首屏展示
 
 ## 数据可视化展示
-<## 数据可视化展示
-
 <img width="800" alt="hourly_activity_chart" src="https://github.com/user-attachments/assets/f2204805-1013-4c00-966b-5df24d0c3ac7" />
 
 <img width="800" alt="weekly_activity_bar" src="https://github.com/user-attachments/assets/314452c7-7bd6-4e77-88c9-82678fbd2252" />
