@@ -1,109 +1,60 @@
--- RFM模型计算+用户分层
+-- ============================================================
+-- RFM 用户价值分层（修正版）：NTILE 分位打分 + 经典 8 分类
+-- 数据表：user_behavior_clean（已清洗）
+-- 仅对有购买行为的用户分层
+--
+-- 局限说明（面试必讲）：
+--   1. 本数据集没有“金额”字段，M 用“购买不同商品数”代理，非真实消费金额；
+--   2. NTILE 按分位切分，同分时按行顺序分配，可能造成边界用户落点略有差异；
+--   3. F（购买次数）与 M（购买商品数）近似共线，8 分类实际退化为 4~5 个有效类别。
+-- ============================================================
+
 WITH user_rfm AS (
+    -- 计算每个购买用户的 R、F、M
     SELECT
         user_id,
-        DATEDIFF('2014-12-19', MAX(CASE WHEN behavior_type=4 THEN time END)) AS R,
-        COUNT(CASE WHEN behavior_type=4 THEN 1 END) AS F,
-        COUNT(DISTINCT CASE WHEN behavior_type=4 THEN item_id END) AS M
+        DATEDIFF('2014-12-19', MAX(CASE WHEN behavior_type = 4 THEN time END)) AS R,
+        COUNT(CASE WHEN behavior_type = 4 THEN 1 END)                          AS F,
+        COUNT(DISTINCT CASE WHEN behavior_type = 4 THEN item_id END)           AS M
     FROM user_behavior_clean
     GROUP BY user_id
-    HAVING F > 0
+    HAVING COUNT(CASE WHEN behavior_type = 4 THEN 1 END) > 0
 ),
-user_rfm_score AS (
+scored AS (
+    -- 分位打分：R 越小越好（反向），F、M 越大越好
     SELECT
-        user_id,
-        R,
-        F,
-        M,
-        CASE
-            WHEN R <= 3 THEN 5
-            WHEN R <= 7 THEN 4
-            WHEN R <= 15 THEN 3
-            WHEN R <= 30 THEN 2
-            ELSE 1
-        END AS R_score,
-        CASE
-            WHEN F >= 5 THEN 5
-            WHEN F >= 3 THEN 4
-            WHEN F = 2 THEN 3
-            WHEN F = 1 THEN 2
-            ELSE 1
-        END AS F_score,
-        CASE
-            WHEN M >= 5 THEN 5
-            WHEN M >= 3 THEN 4
-            WHEN M = 2 THEN 3
-            WHEN M = 1 THEN 2
-            ELSE 1
-        END AS M_score
+        user_id, R, F, M,
+        6 - NTILE(5) OVER (ORDER BY R ASC) AS R_score,
+        NTILE(5) OVER (ORDER BY F ASC)     AS F_score,
+        NTILE(5) OVER (ORDER BY M ASC)     AS M_score
     FROM user_rfm
+),
+labeled AS (
+    -- 经典 8 分类：R/F/M 各以 4 分为界（高=前 40%，低=后 60%）
+    SELECT
+        R, F, M,
+        CASE
+            WHEN R_score >= 4 AND F_score >= 4 AND M_score >= 4 THEN '重要价值客户'
+            WHEN R_score <  4 AND F_score >= 4 AND M_score >= 4 THEN '重要保持客户'
+            WHEN R_score >= 4 AND F_score <  4 AND M_score >= 4 THEN '重要发展客户'
+            WHEN R_score <  4 AND F_score <  4 AND M_score >= 4 THEN '重要挽留客户'
+            WHEN R_score >= 4 AND F_score >= 4 AND M_score <  4 THEN '一般价值客户'
+            WHEN R_score <  4 AND F_score >= 4 AND M_score <  4 THEN '一般保持客户'
+            WHEN R_score >= 4 AND F_score <  4 AND M_score <  4 THEN '一般发展客户'
+            ELSE '一般挽留客户'
+        END AS 客户类型
+    FROM scored
 )
 SELECT
-    user_id,
-    R,
-    F,
-    M,
-    R_score,
-    F_score,
-    M_score,
-    CASE
-        WHEN R_score >=4 AND F_score >=4 AND M_score >=4 THEN '高价值用户'
-        WHEN R_score >=4 AND F_score <=3 AND M_score >=4 THEN '潜力用户'
-        WHEN R_score <=3 AND F_score >=4 AND M_score >=4 THEN '挽留用户'
-        ELSE '流失用户'
-    END AS user_level
-FROM user_rfm_score
-ORDER BY R_score DESC, F_score DESC, M_score DESC;
+    客户类型,
+    COUNT(*)                                                       AS 用户数,
+    ROUND(COUNT(*) / SUM(COUNT(*)) OVER () * 100, 2)               AS 占比_百分比,
+    ROUND(AVG(R), 1)                                               AS 平均R_最近购买间隔天,
+    ROUND(AVG(F), 1)                                               AS 平均F_购买次数,
+    ROUND(AVG(M), 1)                                               AS 平均M_购买商品数
+FROM labeled
+GROUP BY 客户类型
+ORDER BY 用户数 DESC;
 
--- RFM分层占比统计
-WITH user_rfm AS (
-    SELECT
-        user_id,
-        DATEDIFF('2014-12-19', MAX(CASE WHEN behavior_type=4 THEN time END)) AS R,
-        COUNT(CASE WHEN behavior_type=4 THEN 1 END) AS F,
-        COUNT(DISTINCT CASE WHEN behavior_type=4 THEN item_id END) AS M
-    FROM user_behavior_clean
-    GROUP BY user_id HAVING F > 0
-),
-user_rfm_score AS (
-    SELECT
-        user_id,
-        CASE 
-            WHEN R <= 3 THEN 5 
-            WHEN R <= 7 THEN 4 
-            WHEN R <= 15 THEN 3 
-            WHEN R <= 30 THEN 2 
-            ELSE 1 
-        END AS R_score,
-        CASE 
-            WHEN F >= 5 THEN 5 
-            WHEN F >= 3 THEN 4 
-            WHEN F = 2 THEN 3 
-            WHEN F = 1 THEN 2 
-            ELSE 1 
-        END AS F_score,
-        CASE 
-            WHEN M >= 5 THEN 5 
-            WHEN M >= 3 THEN 4 
-            WHEN M = 2 THEN 3 
-            WHEN M = 1 THEN 2 
-            ELSE 1 
-        END AS M_score
-    FROM user_rfm
-),
-user_level AS (
-    SELECT
-        CASE
-            WHEN R_score >= 4 AND F_score >= 4 AND M_score >= 4 THEN '高价值用户'
-            WHEN R_score >= 4 AND F_score <= 3 AND M_score >= 4 THEN '潜力用户'
-            WHEN R_score <= 3 AND F_score >= 4 AND M_score >= 4 THEN '挽留用户'
-            ELSE '流失用户'
-        END AS user_level
-    FROM user_rfm_score
-)
-SELECT
-    user_level,
-    COUNT(*) AS user_count,
-    ROUND(COUNT(*) / (SELECT COUNT(*) FROM user_level) * 100, 2) AS user_ratio
-FROM user_level
-GROUP BY user_level;
+-- 可选：查看“重要四格 / 一般四格”的整体占比（结构上必然约 40% / 60%）
+-- 重要四格要求 M 高（前 40%），一般四格要求 M 低（后 60%），与阈值松紧无关。
