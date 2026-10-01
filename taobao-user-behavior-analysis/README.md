@@ -4,25 +4,35 @@
 
 ## 项目简介
 
-- 数据集：2014 年阿里巴巴移动推荐数据集，**12,256,906 条**行为记录，覆盖 10,000 名用户
+- 数据集：2014 年阿里巴巴移动推荐数据集（`tianchi_mobile_recommend_train_user`），**12,256,906 条**行为记录，覆盖 10,000 名用户
+- 数据来源：阿里云天池。因体积原因未随仓库提供，请自行前往天池下载后导入
 - 时间范围：2014-11-18 ~ 2014-12-18（共 31 天）
 - 行为类型：浏览（pv）、收藏（fav）、加购（cart）、购买（buy）
 - 分析目标：洞察流量结构与用户习惯，定位转化薄弱环节，建立用户价值分层，为精细化运营提供决策依据
 - 技术栈：MySQL（数据预处理与指标计算）、Excel（数据透视表、图表、分析报告）
 
-```markdown
+```
 taobao-user-behavior-analysis/
 ├── excel/
-│   └── taobao_user_analysis_report.xlsx
+│   └── taobao_user_analysis_report.xlsx   # 分析报告与可视化图表
 ├── sql/
-│   ├── behavior_analysis.sql
-│   ├── category_analysis.sql
-│   ├── data_cleaning.sql
 │   ├── data_preview.sql
-│   ├── funnel_analysis.sql
+│   ├── data_cleaning.sql
+│   ├── behavior_analysis.sql
 │   ├── hour_analysis.sql
-│   ├── rfm_analysis.sql
-│   └── week_analysis.sql
+│   ├── week_analysis.sql
+│   ├── funnel_analysis.sql                # 事件级级联比率 + 严格有序漏斗 + 意向分组
+│   ├── rfm_analysis.sql                   # NTILE 分位打分 + 经典 8 分类
+│   └── category_analysis.sql
+├── results/                               # 各查询的原始结果 CSV
+│   ├── behavior.csv
+│   ├── hour.csv
+│   ├── week.csv
+│   ├── funnel_strict.csv
+│   ├── intent.csv
+│   ├── rfm.csv
+│   ├── category_by_conv.csv
+│   └── category_by_buy.csv
 ├── images/
 │   ├── user_behavior_pie.png
 │   ├── hourly_activity_chart.png
@@ -146,9 +156,11 @@ taobao-user-behavior-analysis/
 | 6977 | 22,806 | 1,324 |
 | 8877 | 63,396 | 1,072 |
 
-- 隐藏爆款：类目 2949 以 25.31% 的转化率领先且购买量达 373，应增加推荐流量
-- 高流量低转化：类目 10121 浏览 3,110 但转化率仅 8.59%，可优化详情页或调整选品
-- 无加购直接购买：类目 6544、12309、12514 等无加购记录却有购买，可能是冲动消费品，适合首屏快速购买入口
+> 参考基准：全站整体转化率（购买 ÷ 浏览）= 120,205 ÷ 11,550,581 ≈ **1.04%**。以下结论均以此基准为参照。
+
+- **高转化潜力类目**：类目 2949 浏览 1,474 次带来 373 次购买，转化率 25.31%，在“浏览量 ≥ 100”的 3,873 个类目转化率排名中**位列第二**（第一为类目 2178，28.81%），且绝对购买量较大，可优先增加推荐流量
+- **高流量、零加购类目**：类目 10121 浏览 3,110 次、购买 267 次，转化率 8.59%，**仍约为全站均值 1.04% 的 8 倍**（在“浏览量 ≥ 100”的类目中排第 19 位）；但其**加购记录为 0**，说明用户几乎不经购物车直接下单，宜在首屏设置快速购买入口；详情页承接仍有优化空间
+- **无加购直接购买**：类目 6544、12309、12514 等无加购记录却有购买，可能是冲动消费品，适合首屏快速购买入口
 
 ## 数据可视化展示
 
@@ -166,7 +178,7 @@ taobao-user-behavior-analysis/
 
 ## 如何复现
 
-1. 将 `user_action.csv` 导入 MySQL（库名 `taobao`，原始表名 `淘宝用户分析`）
+1. 将 `tianchi_mobile_recommend_train_user.csv` 导入 MySQL（库名 `taobao`，原始表名 `淘宝用户分析`）
 2. 按顺序运行 `sql/` 下脚本：`data_preview.sql` → `data_cleaning.sql` → 各分析脚本
 3. 导出查询结果至 Excel，用数据透视表或图表功能完成可视化
 4. 完整报告详见 `excel/taobao_user_analysis_report.xlsx`
@@ -185,4 +197,4 @@ taobao-user-behavior-analysis/
 2. **集中火力在周五与晚间**：周五购买爆发、20-22 点为黄金时段，适合安排秒杀、直播等重磅活动
 3. **召回一般挽留客户**：42.3% 的用户约 10 天未买，可设计“老客专属回归礼包”，通过短信/推送唤醒
 4. **维护重要价值客户**：22.5% 的高价值客户贡献高频购买，应提供完善的售后与会员权益，防止流失
-5. **品类优化**：降低高流量低转化类目（如 10121）的跳失率，将流量向高转化类目（如 2949）倾斜；对无加购直接购买的类目设置“快速购买”入口
+5. **品类优化**：对高流量、零加购的类目（如 10121、12514）设置首屏快速购买入口，缩短下单路径；将推荐流量向高转化类目（如 2949、2178）倾斜；对无加购直接购买的类目简化结算流程
